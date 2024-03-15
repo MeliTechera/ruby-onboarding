@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require 'json'
+
 TRELLO_URL = 'https://api.trello.com/1/'
 APIKEY = ''
 APITOKEN = ''
@@ -41,22 +44,20 @@ end
 def post(uri_str)
   uri = URI.parse(URI::Parser.new.escape(uri_str))
   http = Net::HTTP.new(uri.host, uri.port)
-  # http.use_ssl = true if uri.scheme == 'https'
+  http.use_ssl = true if uri.scheme == 'https'
   request = Net::HTTP::Post.new(uri.request_uri)
-  begin
-    response = http.request(request)
-    case response
-    when Net::HTTPSuccess
-      JSON.parse(response.body)
-    else
-      puts "Request failed with code: #{response.code}"
-      puts response.message
-    end
-  rescue SocketError => e
-    puts "Error connecting to the server: #{e.message}"
-  rescue Timeout::Error
-    puts 'Request timed out'
-  rescue StandardError => e
-    puts "An unexpected error occurred: #{e.message}"
+  response = http.request(request)
+  case response
+  when Net::HTTPSuccess
+    JSON.parse(response.body)
+  else
+    puts "Request failed with code: #{response.code}"
+    puts response.message
   end
+rescue SocketError => e
+  puts "Error connecting to the server: #{e.message}"
+rescue Timeout::Error
+  puts 'Request timed out'
+rescue StandardError => e
+  puts "An unexpected error occurred: #{e.message}"
 end
