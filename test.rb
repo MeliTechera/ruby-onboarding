@@ -10,13 +10,12 @@ def get_albums_by_decade(albums)
   result = {}
   albums.each do |album|
     year = album[0..2].to_i * 10
-    album_name = album[5..]
-    next if album_name.nil?
+    next if album.nil?
 
     if result[year].nil?
-      result[year] = [album_name]
+      result[year] = [album]
     else
-      result[year] << album_name
+      result[year] << album
     end
   end
   result
